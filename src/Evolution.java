@@ -40,18 +40,12 @@ public interface Evolution {
     boolean valuesSetted();
 
     /**
-     * Staibilisce se due stati della popolazione sono vicini. Per avere senso, dovrebbe essere chimata su due stati
-     * consecutivi dell'evoluzione, ovvero, se s1 è il primo stato, allora s2 è lo stato che si raggiunge dopo una
-     * applicazione delle regole evolutive. In parole povere, usando un Array "a" di int[] (nell'int[] ci sono le
-     * percentuali degli individui di tutti e 4 i tipi), s1 e s2 sono in posizioni i e i+1 nell'Array "a".
-     * @param stato1 array di interi che rappresenta la popolazione in un preciso istante.
-     * @param stato2 array di interi che rappresenta la popolazione nell'istante successivo a quello di stato1.
-     * @return true se, chiamati x1,y1,z1,t1 i valori nell'array stato1 e x2,y2,z2,t2 i valori nell'array stato2, la
-     * differenza in modulo tra valori con la stessa lettera è minore o uguale a un certo valore k da decidere. Bisogna
-     * vedere con quale rapidità cresce la popolazione e decidere quanto è grande k (le specifiche vogliono che k sia
-     * tale da rendere la differenza tra gli stati statisticamente irrilevante).
+     * Due popolazioni sono considerate vicine se tra le due configurazioni la differenza in termini percentali sulla presenza di individui non è rilevante
+     * e possono essere considerate "simili".
+     * @param other un'altra popolazione da confrontare con this.
+     * @return true se le due configurazioni sono vicine, false altrimenti.
      */
-    boolean isCloseTo(int[] stato1, int[] stato2);
+    boolean isCloseTo(Population other);
 
     /**
      * Controlla per i due genitori se a seguito della generazione di figli il loro valore di mana è negativo. In quel

@@ -25,7 +25,7 @@ public class Population implements Evolution {
     }
 
     @Override
-    public boolean isCloseTo(int[] stato1, int[] stato2) {
+    public boolean isCloseTo(Population other) {
         return false;
     }
 
