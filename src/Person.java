@@ -1,43 +1,57 @@
 import java.util.Objects;
 
 /**
- * Created by Daniel on 03/05/2017.
+ * 
+ * @author Luca Iezzi, Daniel Hrituc
+ *
+ * @param <T>
  */
-public class Person implements Individual {
+
+public class Person<T extends Enum<T>> extends Individual<T>{
 	
-	 /**
-     * Il tipo dell'individuo.
-     */
-    private allowedType individualType;
-    
-    /**
-     * Costruttore dei tipi Person.
-     * @param s stringa per inferire il tipo dell'individuo.
-     * @throws IllegalArgumentException se il tipo inferito non fa parte di quelli accettati da  {@link allowedType}
-     */
-    public Person(String s) throws IllegalArgumentException{
-        try{
-            allowedType adjustedS = allowedType.valueOf(s.toUpperCase());
-            this.individualType = adjustedS;
-        } catch(IllegalArgumentException e){
-            System.out.println(e + " Non esiste l'individuo di tipo " + s.toUpperCase() + ".");
-        }
-
-    }
-
-    @Override
-    public allowedType getIndividualType() {return this.individualType;}
-
-    @Override
-    public boolean equals(Object p){
-        if(p == this) return true;
-        if(!(p instanceof Person)) return false;
-        if(Objects.equals(((Person) p).getIndividualType(), this.getIndividualType())) return true;
+	/**
+	 * Il tipo dell'individuo.
+	 */
+	private Individual.Type type;
+	
+	/**
+	 * TTL : TimeToLive, inizializzato a 2, verrà decrementato ogniqualvolta un Individuo in grado di 
+	 * 		accoppiarsi non lo farà; quando TTL = 0, l'Individuo verrà ucciso.
+	 * suggestion: parametro passato da genitore a figlio, che lo influenzerà leggermente sulla scelta 
+	 * 			del futuro partner, in base alla propria esperienza positiva.
+	 */
+	private  int TTL, suggestion;
+	
+	/**
+	 * Costruttore dei primi individui della popolazione.
+	 * @param t in tipo inferito dell'Individuo.
+	 */
+	public Person(Individual.Type t){
+		this.type = t;
+		this.TTL = 2;
+	}
+	
+	/**
+	 * Costruttore dei successivi individui della popolazione.
+	 * @param t il tipo inferito dell'Individuo.
+	 * @param s il valore di suggestion inferito dai genitori di questo Individuo.
+	 */
+	public Person(Individual.Type t, int s){
+		this(t);
+		this.suggestion = s;
+	}
+	
+	@Override
+    public boolean equals(Object i){
+        if(i == this) return true;
+        if(!(i instanceof Person)) return false;
+        if(Objects.equals(((Person) i).type, this.type)) return true;
         return false;
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(individualType);
+        return Objects.hash(type, TTL, suggestion);
     }
+	
 }

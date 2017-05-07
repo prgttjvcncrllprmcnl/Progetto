@@ -1,78 +1,74 @@
+import java.util.List;
 /**
- * Interfaccia che definisce il concetto di evoluzione. Verrà poi implementata da un'opportuna classe Population che
- * rappresenterà una particolare popolazione che evolve.
+ * 
+ * @author Luca Iezzi, Daniel Hrituc
+ *
  */
 public interface Evolution {
-
-    /**
-     * Gestisce i tipi ammessi per una popolazione:
-     *      M: Uomini morigerati
-     *      A: Uomini avventurieri
-     *      P: Donne prudenti
-     *      S: Donne spregiudicate
-     */
-    enum Type {
-        M, A, P, S
-    }
-
-    /**
-     * Calcola il valore percentuale di un tipo di individui.
-     * @param type un valore di un oggetto di tipo enum che può essere M, A, P, o S.
-     * @return il valore percentuale del tipo corrispondente rispetto alla popolazione totale.
-     * @throws IllegalArgumentException se viene fornita in input un tipo diverso da M, A, P, o S.
-     */
-    int getPercentage(Type type) throws IllegalArgumentException;
-
-    /**
-     * Imposta i valori che guideranno l'evoluzione della popolazione. Questi valori dovranno essere settati alla
-     * creazione dell'oggetto Population e verranno richiesti all'utente nella versione grafica del progetto.
-     * @param a premio per il successo nella generazione di un figlio.
-     * @param b costo per crescere un figlio.
-     * @param c costo del corteggiamento.
-     */
-    void setValues(int a, int b, int c);
-
-    /**
-     * Metodo di controllo per verificare se i valori a,b,c sono stati settati. L'evoluzione non può cominciare senza
-     * aver settato quei valori. Nella versione grafica del progetto i valori saranno chiesti in input all'utente.
-     * @return true se i valori sono stati settati; false altrimenti.
-     */
-    boolean valuesSetted();
-
-    /**
-     * Due popolazioni sono considerate vicine se tra le due configurazioni la differenza in termini percentali sulla presenza di individui non è rilevante
-     * e possono essere considerate "simili".
-     * @param other un'altra popolazione da confrontare con this.
-     * @return true se le due configurazioni sono vicine, false altrimenti.
-     */
-    boolean isCloseTo(Population other);
-
-    /**
-     * Controlla per i due genitori se a seguito della generazione di figli il loro valore di mana è negativo. In quel
-     * caso viene uccisa la persona.
-     * @param gen1 uno dei genitori.
-     * @param gen2 l'altro genitore.
-     * @return true se almeno uno dei due viene ucciso (a scopo di debugging)
-     */
-    boolean checkForDeath(Person gen1, Person gen2);
-
-    /**
-     * Funzione che calcola il numero di figli di una coppia e il loro tipo.
-     * @param gen1 uno dei genitori
-     * @param gen2 l'altro genitore
-     * @return true se generano figli (a scopo di debugging)
-     */
-    boolean createChildren(Person gen1, Person gen2);
-
-    /**
-     * Funzione che effettivamente aziona il passo evolutivo: è il famoso "mercato" o "discoteca" dove avvengono gli
-     * incontri. Come funziona:
-     *      - vengno scelti in maniera proporzionale al loro numero le persone di tutti i tipi (percentuale che andrà
-     *      regolata per far tornare la stabilità; mettiamo 50% all'inizio)
-     *      - le persone scelte vengono divise in 4 array e ciclicamente per ognuno dei tipi, prende la prima persona
-     *      e trova la sua coppia in base al vantaggio evolutivo che ottiene. Se non trova una coppia compatibile,
-     *      muore.
-     * La funzione poi aggiorna i valori di percentuali una volta terminato il processo di accoppiamento.
-     */
-    void createCouples();
+	
+	/**
+	 * Crea la coppia (p1, p2) e le fa accoppiare (in maniera casuale) con eventuale generazione di figli.
+	 * @param p1 il primo genitore.
+	 * @param p2 il secondo genitore.
+	 * @return True se l'accoppiamento va a buon fine, False altrimenti.
+	 */
+	boolean createCouples(Person<Individual.Type> p1, Person<Individual.Type> p2);
+	
+	/**
+	 * Elimina l'Individuo dalla popolazione.
+	 * @param p la persona da uccidere.
+	 * @return True se la sua eliminazione ha avuto successo, False altrimenti.
+	 */
+	boolean killPerson(Person<Individual.Type> p);
+	
+	/**
+	 * Esegue un controllo sull'individuo alla generazione di ogni figlio:
+	 * 		Se il suo TTL arriva a 0 prima che esso sia riuscito a riprodursi, esso viene rimosso dalla popolazione;
+	 *		Se il costo della generazione di un figlio lo porta in negativo prima che esso possa completare
+	 *		quella di tutti gli altri previsti, esso viene rimosso dalla popolazione.
+	 * @param p l'Individuo da controllare.
+	 * @return True se l'individuo va rimosso dalla popolazione.
+	 */
+	boolean checkForDeath(Person<Individual.Type> p);
+	
+	/**
+	 * Setta i seguenti parametri(nello schema ):
+	 * @param a premio per il successo nella generazione di figli.
+	 * @param b costo del crescere figli.
+	 * @param c costo del corteggiamento.
+	 */
+	void setValues(int a, int b, int c);
+	
+	/**
+	 * Controlla che i valori a, b, c siano settati.
+	 * @return True se tali valori sono stati settati, False altrimenti.
+	 */
+	boolean valuesIsSet();
+	
+	/**
+	 * Controlla che la popolazione attuale sia statisticamente simile in composizione di Individui a quelle con essa confrontate.
+	 * Ciò viene fatto calcolando la variazione percentuale di ogni gruppo di individui da una popolazione all'altra, considerando 
+	 * le probabilità di generazione dei figli da un passo evolutivo all'altro.
+	 * @param other l'/le altra/e popolazione/i da confrontare con quella attuale.
+	 * @return True se le popolazioni sono statisticamente simili, False altrimenti.
+	 */
+	boolean isNextTo(int[] other);
+	
+	/**
+	 * Una popolazione viene considerata stabile se, osservato il suo variare in un range di passi evolutivi (i.e. 50), essa tende a 
+	 * crescere in maniera proporzionale sul numero di gruppi di individui che la compongono, dimostrazione di un bilanciamento del
+	 * rapporto costo/beneficio per la generazione di nuovi individui.
+	 * @param l una lista che contiene gli ultimi N passi evolutivi da analizzare.
+	 * @return True se la popolazione può essere considerata stabile, False altrimenti.
+	 */
+	boolean checkForStabilty(List<int[]> l);
+	
+	/**
+	 * Restituisce il valore percentuale relativo alla presenza di una particolare classe di individui all'interno della sua popolazione.
+	 * @param t il tipo dell'individuo in esame.
+	 * @return il valore percentuale degli individui del tipo t in questa popolazione.
+	 * @throws IllegalArgumentException
+	 */
+	double getPercentage(Individual.Type t) throws IllegalArgumentException;
+	
 }
