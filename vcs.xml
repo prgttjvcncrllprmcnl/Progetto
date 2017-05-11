@@ -3,15 +3,11 @@
     <option name="visitedUrls">
       <list>
         <UrlAndUserName>
-          <option name="url" value="https://github.com/Nikpick/Caso.git" />
-          <option name="userName" value="" />
-        </UrlAndUserName>
-        <UrlAndUserName>
-          <option name="url" value="https://github.com/prgttjvcncrllprmcnl/Progetto.git" />
+          <option name="url" value="https://github.com/prgttjvcncrllprmcnl/Progetto" />
           <option name="userName" value="" />
         </UrlAndUserName>
       </list>
     </option>
-    <option name="cloneParentDir" value="C:\Users\glynk\IdeaProjects" />
+    <option name="cloneParentDir" value="C:\Users\Luca Iezzi\Desktop\PROGETTO_GIT" />
   </component>
 </application>
