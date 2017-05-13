@@ -193,7 +193,7 @@ public class Population implements Evolution {
 
 	@Override
 	public boolean killPerson(Person<Individual.Type> p, int i) {
-		if (p.getType().equals(Individual.Type.P)) {
+		/*if (p.getType().equals(Individual.Type.P)) {
 		    pruList.remove(i);
 		    pru--;
         }
@@ -209,7 +209,26 @@ public class Population implements Evolution {
 		    sprList.remove(i);
 		    spr--;
         }
-        return true;
+        return true;*/
+		switch(p.getType()){
+            case P:
+                pruList.remove(i);
+                pru--;
+                return true;
+            case A:
+                avvList.remove(i);
+                avv--;
+                return true;
+            case M:
+                morList.remove(i);
+                mor--;
+                return true;
+            case S:
+                sprList.remove(i);
+                spr--;
+                return true;
+            default: return false;
+        }
 	}
 
 	@Override
