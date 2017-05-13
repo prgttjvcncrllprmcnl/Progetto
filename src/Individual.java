@@ -1,38 +1,38 @@
 /**
- * 
+ * Classe astratta che generalizza il tipo Person.
  * @author Luca Iezzi, Daniel Hrituc
  *
  */
 public abstract class Individual<T extends Enum<T>> {
-	
+
 	/**
-	 * @author Luca Iezzi
-	 * Un Enum che fornisce tutti e quattro i tipi di Individuo accettati nella creazione di quest'ultimo:
-	 * Uomini:
-	 * 		-Morigerati;
-	 * 		-Avventurieri;
-	 * Donne:
-	 * 		-Prudenti;
-	 * 		-Spregiudicate;
+	 * Enum dei tipi ammessi.
 	 */
 	public enum Type{
 		M, A, P, S
-	};
-	
-	/**
-	 * Calcola il payoff della generazione di un figlio a seconda del tipo degli individui genitori di
-	 * questo (seguendo lo schema qui sotto).
-	 * @param first il primo genitore.
-	 * @param second il secondo genitore.
-	 * @return un array di interi di lunghezza 2, dove alla posizione 0 c'è il payoff per first e alla posizione 1
-	 * il payoff per second.
-	 * 
-	 * 			            M 						        A
-	 * 		P    (a - b/2 - c, a - b/2 - c) 		-
-	 * 	   S        (a - b/2, a - b/2)			(a - b, a)
-	 */
-	public int[] payoff(Person<T> first, Person<T> second){
-		throw new UnsupportedOperationException();
 	}
-	
+
+    /**
+     * Calcola il payoff ottenuto dalla generazione di un figlio.
+     * @param first un genitore.
+     * @param second l'altro genitore.
+     * @param a il guadagno per la generazione del figlio.
+     * @param b il costo per la crescita del figlio.
+     * @param c il costo del corteggiamento.
+     * @return una tupla contenente i payoff di first e second.
+     */
+	public static int[] payoff(Person<Individual.Type> first, Person<Individual.Type> second, int a, int b, int c){
+		int[] payoff = new int[2];
+	    if ((first.getType().equals(Type.M) && second.getType().equals(Type.P)) || (first.getType().equals(Type.P) && second.getType().equals(Type.M))) {
+		    payoff[0] = payoff[1] = a-b/2-c;
+        } else if ((first.getType().equals(Type.M) && second.getType().equals(Type.S)) || (first.getType().equals(Type.S) && second.getType().equals(Type.M))) {
+            payoff[0] = payoff[1] = a-b/2;
+        } else if ((first.getType().equals(Type.A) && second.getType().equals(Type.S)) || (first.getType().equals(Type.S) && second.getType().equals(Type.A))) {
+	        payoff[0] = a-b;
+	        payoff[1] = a;
+        } else {
+	        payoff[0] = payoff[1] = 0;
+        }
+        return payoff;
+	}
 }
