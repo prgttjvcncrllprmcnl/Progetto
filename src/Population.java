@@ -15,6 +15,7 @@ public class Population implements Evolution {
     private List<Person<Individual.Type>> pruList = new ArrayList<>();
     private List<Person<Individual.Type>> sprList = new ArrayList<>();
     private int mor, avv, pru, spr, a, b, c;
+    private boolean abcSetted = false;
 
 	/**
 	 * Classe per gestire una coppia tipo-intero utile in vari contesti.
@@ -23,8 +24,8 @@ public class Population implements Evolution {
 		private Individual.Type type;
 		private int suggestion;
 		public Pair(Individual.Type t, int s){
-			this.type = t;
 			this.suggestion = s;
+            this.type = t;
 		}
 	}
 
@@ -233,32 +234,43 @@ public class Population implements Evolution {
 
 	@Override
 	public void setValues(int a, int b, int c) {
-		// TODO Auto-generated method stub
-
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        abcSetted = true;
 	}
 
 	@Override
 	public boolean valuesIsSet() {
-		// TODO Auto-generated method stub
-		return false;
+        return abcSetted;
 	}
 
 	@Override
 	public boolean isNextTo(int[] first, int[] other) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+        for (int i = 0; i < 4; i++) {
+            if (Math.abs(first[i]-other[i]) > 5) return false;
+        }
+        return true;
+    }
 
 	@Override
-	public boolean checkForStabilty(List<int[]> l) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean checkForStability(List<int[]> l) {
+        for (int i = 1; i < l.size(); i++) {
+            if (!isNextTo(l.get(0),l.get(i))) return false;
+        }
+        return true;
+    }
 
 	@Override
 	public double getPercentage(Individual.Type t) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return 0;
+        int tot = mor+avv+spr+pru;
+        switch (t) {
+            case A: return Math.floor(((double)avv/(double)tot)*100 * 100) / 100;
+            case M: return Math.floor(((double)mor/(double)tot)*100 * 100) / 100;
+            case P: return Math.floor(((double)pru/(double)tot)*100 * 100) / 100;
+            case S: return Math.floor(((double)spr/(double)tot)*100 * 100) / 100;
+            default: return 0;
+        }
 	}
 
     /**

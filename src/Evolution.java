@@ -64,7 +64,7 @@ public interface Evolution {
      * @param l un array di stati.
      * @return true se è stabile, false altrimenti.
      */
-	boolean checkForStabilty(List<int[]> l);
+	boolean checkForStability(List<int[]> l);
 
     /**
      * Calcola la percentuale di un tipo nella popolazione.
