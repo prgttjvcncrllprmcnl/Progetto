@@ -4,49 +4,89 @@ import java.util.Objects;
  * 
  * @author Luca Iezzi, Daniel Hrituc
  *
- * @param <T>
+ * @param <T> il tipo di una persona
  */
 
-public class Person<T extends Enum<T>> extends Individual<T>{
-	
-	/**
-	 * Il tipo dell'individuo.
-	 */
+public class Person<T extends Enum<T>> extends Individual<T> {
+
 	private Individual.Type type;
-	
-	/**
-	 * TTL : TimeToLive, inizializzato a 2, verrà decrementato ogniqualvolta un Individuo in grado di 
-	 * 		accoppiarsi non lo farà; quando TTL = 0, l'Individuo verrà ucciso.
-	 * suggestion: parametro passato da genitore a figlio, che lo influenzerà leggermente sulla scelta 
-	 * 			del futuro partner, in base alla propria esperienza positiva.
-	 */
-	private  int TTL, suggestion;
-	
-	/**
-	 * Costruttore dei primi individui della popolazione.
-	 * @param t in tipo inferito dell'Individuo.
-	 */
-	public Person(Individual.Type t){
+	private int TTL;
+	private int suggestion = 0;
+    private Individual.Type suggestedType;
+    public int sex;
+
+    /**
+     * Costruttore di una persona. Inizializza il suo tipo e il TTL (Time to Live) che vine usato per stabilire il
+     * numero di turni che la persna può rimanere nel "mercato".
+     * @param t il tipo della persona. Può essere M, A, P o S.
+     */
+	public Person(Individual.Type t) {
 		this.type = t;
 		this.TTL = 2;
+		setSex();
 	}
-	
-	/**
-	 * Costruttore dei successivi individui della popolazione.
-	 * @param t il tipo inferito dell'Individuo.
-	 * @param s il valore di suggestion inferito dai genitori di questo Individuo.
-	 */
-	public Person(Individual.Type t, int s){
-		this(t);
-		this.suggestion = s;
-	}
+
+    /**
+     * Setta il sesso della persona basandosi sul suo tipo. 0 = femmina, 1 = maschio
+     */
+	private void setSex() {
+	    if (type.equals(Type.P) || type.equals(Type.S)) sex = 0;
+	    else sex = 1;
+    }
+
+    /**
+     * Setter per il valore del consiglio dei genitori.
+     * @param n il valore.
+     */
+    public void setSuggestion(int n) {
+	    suggestion = n;
+    }
+
+    /**
+     * Setter per il tipo suggerito dai genitori.
+     * @param t il tipo suggerito.
+     */
+    public void setSuggestedType(Individual.Type t) {
+	    suggestedType = t;
+    }
+
+    /**
+     * Getter del tipo.
+     * @return il tipo della persona.
+     */
+	public Individual.Type getType() {
+	    return type;
+    }
+
+    /**
+     * Getter del TTL.
+     * @return il TTL.
+     */
+    public int getTTL() {
+	    return TTL;
+    }
+
+    /**
+     * Getter della suggestion.
+     * @return la sugestion.
+     */
+    public int getSuggestion() {
+	    return suggestion;
+    }
+
+    /**
+     * Getter per il suggestedType.
+     * @return il tipo suggerito dai genitori.
+     */
+    public Individual.Type getSuggestedType() {
+        return suggestedType;
+    }
 	
 	@Override
-    public boolean equals(Object i){
+    public boolean equals(Object i) {
         if(i == this) return true;
         if(!(i instanceof Person)) return false;
-        if(Objects.equals(((Person) i).type, this.type)) return true;
-        return false;
+        return (Objects.equals(((Person) i).type, this.type));
     }
 
     @Override
