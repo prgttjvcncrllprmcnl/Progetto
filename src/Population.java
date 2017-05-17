@@ -120,36 +120,47 @@ public class Population implements Evolution {
 	private List<PersonPair> remaining = new ArrayList<>();
     @Override
     public void evolve() {
-	    int mor_n = get30Percent(mor);
+	    checkPeopleToKill();
+        int mor_n = get30Percent(mor);
         int avv_n = get30Percent(avv);
         int pru_n = get30Percent(pru);
         int spr_n = get30Percent(spr);
-        List<PersonPair> mor_list = choosePeople(mor_n, Individual.Type.M);
-        List<PersonPair> avv_list = choosePeople(avv_n, Individual.Type.A);
-        List<PersonPair> pru_list = choosePeople(pru_n, Individual.Type.P);
-        List<PersonPair> spr_list = choosePeople(spr_n, Individual.Type.S);
+        List<PersonPair> mor_list = choosePeople(mor_n, morList);
+        List<PersonPair> avv_list = choosePeople(avv_n, avvList);
+        List<PersonPair> pru_list = choosePeople(pru_n, pruList);
+        List<PersonPair> spr_list = choosePeople(spr_n, sprList);
         if (remaining.size() != 0) { // se ci sono persone rimaste dal turno precedente.
             for (PersonPair pp : remaining) {
                 if (pp.person.getTTL() != 0) {
                     switch (pp.person.getType()) {
-                        case M: mor_list.add(0, pp);
-                        case A: avv_list.add(0, pp);
-                        case S: spr_list.add(0, pp);
-                        case P: pru_list.add(0, pp);
+                        case M: {
+                            mor_list.add(0, pp);
+                            break;
+                        }
+                        case A: {
+                            avv_list.add(0, pp);
+                            break;
+                        }
+                        case S: {
+                            spr_list.add(0, pp);
+                            break;
+                        }
+                        case P: {
+                            pru_list.add(0, pp);
+                            break;
+                        }
                     }
-                } else {
-                    killPerson(pp.person,pp.index);
                 }
             }
         }
         remaining.clear();
         List<List<PersonPair>> l = new ArrayList<>();
-        int max = getMaxSize(l);
         l.add(mor_list); l.add(avv_list); l.add(pru_list); l.add(spr_list);
+        int max = getMaxSize(l);
         Random r = new Random();
         int n = r.nextInt(4); // per vedere chi inizia a scegliere
 
-        for (int i = 0; i < max; i++) {
+        for (int i = 0; i < 4*max; i++) {
             if (l.get(n).size() != 0) {
                 PersonPair p1 = l.get(n).get(0); //prendo la prima PersonPair nella lista del tipo preso a caso
                 int coin = r.nextInt(100); //lancio moneta. se è < 50 scelgo un tipo, altrimenti sceglo un altro. uso un lancio 0-99 per gestire il caso in cui ho suggestion.
@@ -157,7 +168,7 @@ public class Population implements Evolution {
                     case M: {
                         int prob_pru = 49;
                         int prob_spr = 50;
-                        if (p1.person.getSuggestedType().equals(Individual.Type.P)) {
+                        if (Objects.equals(p1.person.getSuggestedType(),(Individual.Type.P))) {
                             prob_pru += p1.person.getSuggestion();
                             prob_spr -= p1.person.getSuggestion();
                         } else {
@@ -171,13 +182,17 @@ public class Population implements Evolution {
                                 createFamily(p1.person, p2.person, p1.index, p2.index);
                                 p1.person.decreaseTTL();
                                 p2.person.decreaseTTL();
+                                mor_list.remove(0);
+                                pru_list.remove(0);
                             } else {
                                 p1.person.decreaseTTL();
                                 remaining.add(p1);
+                                mor_list.remove(0);
                             }
                         } else if (coin <= prob_pru && l.get(2).size() == 0) {
                             p1.person.decreaseTTL();
                             remaining.add(p1);
+                            mor_list.remove(0);
                         } else if (coin >= prob_spr && l.get(3).size() != 0) { //se c'è almeno una spregiudicata
                             PersonPair p2 = l.get(3).get(0); //prendo la spregiudicata
                             if (p2.person.getSuggestion() == 0) {
@@ -186,41 +201,52 @@ public class Population implements Evolution {
                                     createFamily(p1.person, p2.person, p1.index, p2.index);
                                     p1.person.decreaseTTL();
                                     p2.person.decreaseTTL();
+                                    mor_list.remove(0);
+                                    spr_list.remove(0);
                                 } else {
                                     p1.person.decreaseTTL();
                                     remaining.add(p1);
+                                    mor_list.remove(0);
                                 }
                             } else {
                                 int coin2 = r.nextInt(100);
-                                if (p2.person.getSuggestedType().equals(Individual.Type.M)) { //se il consiglio è per M
+                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.M))) { //se il consiglio è per M
                                     if (coin2 <= 49+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        mor_list.remove(0);
+                                        spr_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        mor_list.remove(0);
                                     }
                                 } else {
                                     if (coin2 >= 50+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        mor_list.remove(0);
+                                        spr_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        mor_list.remove(0);
                                     }
                                 }
                             }
                         } else if (coin >= prob_spr && l.get(3).size() == 0) {
                             p1.person.decreaseTTL();
                             remaining.add(p1);
+                            mor_list.remove(0);
                         }
+                        break;
                     }
                     case S: {
                         int prob_mor = 49;
                         int prob_avv = 50;
-                        if (p1.person.getSuggestedType().equals(Individual.Type.M)) {
+                        if (Objects.equals(p1.person.getSuggestedType(), (Individual.Type.M))) {
                             prob_mor += p1.person.getSuggestion();
                             prob_avv -= p1.person.getSuggestion();
                         } else {
@@ -235,29 +261,38 @@ public class Population implements Evolution {
                                     createFamily(p1.person, p2.person, p1.index, p2.index);
                                     p1.person.decreaseTTL();
                                     p2.person.decreaseTTL();
+                                    spr_list.remove(0);
+                                    mor_list.remove(0);
                                 } else {
                                     p1.person.decreaseTTL();
                                     remaining.add(p1);
+                                    spr_list.remove(0);
                                 }
                             } else {
                                 int coin2 = r.nextInt(100);
-                                if (p2.person.getSuggestedType().equals(Individual.Type.S)) { //se il consiglio è per S
+                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.S))) { //se il consiglio è per S
                                     if (coin2 <= 49+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        spr_list.remove(0);
+                                        mor_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        spr_list.remove(0);
                                     }
                                 } else {
                                     if (coin2 >= 50+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        spr_list.remove(0);
+                                        mor_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        spr_list.remove(0);
                                     }
                                 }
                             }
@@ -272,15 +307,20 @@ public class Population implements Evolution {
                                     createFamily(p1.person, p2.person, p1.index, p2.index);
                                     p1.person.decreaseTTL();
                                     p2.person.decreaseTTL();
+                                    spr_list.remove(0);
+                                    avv_list.remove(0);
                                 } else {
                                     p1.person.decreaseTTL();
                                     remaining.add(p1);
+                                    spr_list.remove(0);
                                 }
                             }
                         } else if (coin >= prob_avv && l.get(1).size() == 0) {
                             p1.person.decreaseTTL();
                             remaining.add(p1);
+                            spr_list.remove(0);
                         }
+                        break;
                     }
                     case P: {
                         if (coin <= 49 && l.get(0).size() != 0) { //se c'è almeno un morigerato
@@ -291,36 +331,47 @@ public class Population implements Evolution {
                                     createFamily(p1.person, p2.person, p1.index, p2.index);
                                     p1.person.decreaseTTL();
                                     p2.person.decreaseTTL();
+                                    pru_list.remove(0);
+                                    mor_list.remove(0);
                                 } else {
                                     p1.person.decreaseTTL();
                                     remaining.add(p1);
+                                    pru_list.remove(0);
                                 }
                             } else {
                                 int coin2 = r.nextInt(100);
-                                if (p2.person.getSuggestedType().equals(Individual.Type.P)) { //se il consiglio è per P
+                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.P))) { //se il consiglio è per P
                                     if (coin2 <= 49+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        pru_list.remove(0);
+                                        mor_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        pru_list.remove(0);
                                     }
                                 } else {
                                     if (coin2 >= 50+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        pru_list.remove(0);
+                                        mor_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        pru_list.remove(0);
                                     }
                                 }
                             }
-                        } else if (coin >= 50 && l.get(0).size() == 0) {
+                        } else {
                             p1.person.decreaseTTL();
                             remaining.add(p1);
+                            pru_list.remove(0);
                         }
+                        break;
                     }
                     case A: {
                         if (coin <= 49 && l.get(3).size() != 0) { //se c'è almeno una spregiudicata
@@ -331,40 +382,86 @@ public class Population implements Evolution {
                                     createFamily(p1.person, p2.person, p1.index, p2.index);
                                     p1.person.decreaseTTL();
                                     p2.person.decreaseTTL();
+                                    avv_list.remove(0);
+                                    spr_list.remove(0);
                                 } else {
                                     p1.person.decreaseTTL();
                                     remaining.add(p1);
+                                    avv_list.remove(0);
                                 }
                             } else {
                                 int coin2 = r.nextInt(100);
-                                if (p2.person.getSuggestedType().equals(Individual.Type.A)) { //se il consiglio è per A
+                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.A))) { //se il consiglio è per A
                                     if (coin2 <= 49+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        avv_list.remove(0);
+                                        spr_list.remove(0);
+
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        avv_list.remove(0);
                                     }
                                 } else {
                                     if (coin2 >= 50+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
                                         createFamily(p1.person, p2.person, p1.index, p2.index);
                                         p1.person.decreaseTTL();
                                         p2.person.decreaseTTL();
+                                        avv_list.remove(0);
+                                        spr_list.remove(0);
                                     } else {
                                         p1.person.decreaseTTL();
                                         remaining.add(p1);
+                                        avv_list.remove(0);
                                     }
                                 }
                             }
-                        } else if (coin >= 50 && l.get(3).size() == 0) {
+                        } else {
                             p1.person.decreaseTTL();
                             remaining.add(p1);
+                            avv_list.remove(0);
                         }
+                        break;
                     }
                 }
             }
             n = (n+1)%4;
+        }
+    }
+
+    /**
+     * Chiamata prima di effettuare una evolve. Controlla che ci siano persone con TTL = 0 e le uccide.
+     */
+    private void checkPeopleToKill() {
+        for (int i = 0; i < morList.size();) {
+            if (morList.get(i).getTTL() == 0) {
+                killPerson(morList.get(i),i);
+            } else {
+                i++;
+            }
+        }
+        for (int i = 0; i < avvList.size();) {
+            if (avvList.get(i).getTTL() == 0) {
+                killPerson(avvList.get(i),i);
+            } else {
+                i++;
+            }
+        }
+        for (int i = 0; i < pruList.size();) {
+            if (pruList.get(i).getTTL() == 0) {
+                killPerson(pruList.get(i),i);
+            } else {
+                i++;
+            }
+        }
+        for (int i = 0; i < sprList.size();) {
+            if (sprList.get(i).getTTL() == 0) {
+                killPerson(sprList.get(i),i);
+            } else {
+                i++;
+            }
         }
     }
 
@@ -379,27 +476,29 @@ public class Population implements Evolution {
     /**
      * Metodo che seleziona a caso un certo numero di persone de una lista.
      * @param quantity il numero di persone da selezionare.
-     * @param t il tipo di persone da selezionare.
+     * @param list la lista di persone dalla quale selezionare.
      * @return la lista di PersonPair relativa alle persone selezionate.
      */
-    private List<PersonPair> choosePeople(int quantity, Individual.Type t) {
+    private List<PersonPair> choosePeople(int quantity, List<Person<Individual.Type>> list) {
         List<PersonPair> l = new ArrayList<>();
 	    Random r = new Random();
         Set<Integer> set = new HashSet<>();
+        Set<Integer> avoidLoop = new HashSet<>();
+        boolean looped = false;
         int n;
         for (int i = 0; i < quantity; i++) {
             n = r.nextInt(quantity);
-            while (set.contains(n) || ((t.equals(Individual.Type.M) && morList.get(n).isParent) || (t.equals(Individual.Type.P) && pruList.get(n).isParent)
-                    || (t.equals(Individual.Type.S) && sprList.get(n).isParent))) { //controllo se è un indice già usato o se è già un genitore
+            while (set.contains(n) || list.get(n).isParent || list.get(n).getTTL() != list.get(n).defaultTTL) {
+                avoidLoop.add(n);
+                if (avoidLoop.size() == quantity) {
+                    looped = true;
+                    break;
+                }
                 n = r.nextInt(quantity);
             }
             set.add(n);
-            switch (t) {
-                case M: l.add(new PersonPair(morList.get(n),n));
-                case P: l.add(new PersonPair(pruList.get(n),n));
-                case A: l.add(new PersonPair(avvList.get(n),n));
-                case S: l.add(new PersonPair(sprList.get(n),n));
-            }
+            if (!looped) l.add(new PersonPair(list.get(n),n));
+            else looped = false;
         }
         return l;
     }
@@ -499,42 +598,30 @@ public class Population implements Evolution {
 
 	@Override
 	public boolean killPerson(Person<Individual.Type> p, int i) {
-		/*if (p.getType().equals(Individual.Type.P)) {
-		    pruList.remove(i);
-		    pru--;
-        }
-	    if (p.getType().equals(Individual.Type.A)) {
-		    avvList.remove(i);
-		    avv--;
-        }
-	    if (p.getType().equals(Individual.Type.M)) {
-		    morList.remove(i);
-		    mor--;
-        }
-	    if (p.getType().equals(Individual.Type.S)) {
-		    sprList.remove(i);
-		    spr--;
-        }
-        return true;*/
 		switch(p.getType()){
             case P:
                 pruList.remove(i);
                 pru--;
-                return true;
+                break;
             case A:
                 avvList.remove(i);
                 avv--;
-                return true;
+                break;
             case M:
                 morList.remove(i);
                 mor--;
-                return true;
+                break;
             case S:
                 sprList.remove(i);
                 spr--;
-                return true;
-            default: return false;
+                break;
         }
+        for (PersonPair pers : remaining) {
+            if (pers.person.getType().equals(p.getType()) && pers.index > i) {
+                pers.index--;
+            }
+		}
+		return true;
 	}
 
 	@Override
@@ -602,7 +689,7 @@ public class Population implements Evolution {
             return 1;
         }
         int y = new Random().nextInt(101);
-        return (int)Math.floor(Math.exp(100/(y+47))-1.34);
+        return (int)Math.floor(Math.exp(100.00/((double)y+47.00))-1.34);
     }
 
     /**
@@ -619,6 +706,7 @@ public class Population implements Evolution {
      * la seconda posizione è un valore per il tipo (0 = P, 1 = M, 2 = S, 3 = A)
      */
     private int[] typeOfChildren(Individual.Type parent1, Individual.Type parent2) throws IllegalArgumentException {
+        /*
         if (parent1.equals(Individual.Type.P) && parent2.equals(Individual.Type.A) || (parent1.equals(Individual.Type.A) && parent2.equals(Individual.Type.P))) {
             throw new IllegalArgumentException();
         }
@@ -628,6 +716,7 @@ public class Population implements Evolution {
         if ((!parent2.equals(Individual.Type.M)) || !parent2.equals(Individual.Type.A) || !parent2.equals(Individual.Type.S) || !parent2.equals(Individual.Type.P)) {
             throw new IllegalArgumentException();
         }
+        */
         int[] figlio = new int[2];
         figlio[0] = new Random().nextInt(2);
         if ((parent1.equals(Individual.Type.M) && parent2.equals(Individual.Type.P)) || parent1.equals(Individual.Type.P) && parent2.equals(Individual.Type.M)) {
@@ -653,5 +742,14 @@ public class Population implements Evolution {
             }
         }
         return figlio;
+    }
+
+
+    /* ****************TESTING METODES******************** */
+
+    public int[] currentPopulation() {
+        int[] n = new int[4];
+        n[0] = mor; n[1] = avv; n[2] = pru; n[3] = spr;
+        return n;
     }
 }
