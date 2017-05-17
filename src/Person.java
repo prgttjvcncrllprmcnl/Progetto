@@ -8,7 +8,7 @@ import java.util.Objects;
  */
 
 public class Person<T extends Enum<T>> extends Individual<T> {
-
+    public boolean isParent = false;
 	private Individual.Type type;
 	private int TTL;
 	private int suggestion = 0;
@@ -64,6 +64,13 @@ public class Person<T extends Enum<T>> extends Individual<T> {
      */
     public int getTTL() {
 	    return TTL;
+    }
+
+    /**
+     * Riduce di 1 il TTL.
+     */
+    public void decreaseTTL() {
+        TTL--;
     }
 
     /**
