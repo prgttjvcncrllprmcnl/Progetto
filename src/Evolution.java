@@ -11,7 +11,7 @@ public interface Evolution {
      * caso le persone che devono andare al mercato (30% di ogni tipo), gestirà le coppie chiamando il metodo
      * createFamily e gestisce il problema dell'eliminazione:
      * l'idea per eliminare una persona è accedere alla corrispondente lista dove si trovava tramite l'indice che la
-     * person aveva nella lista. tuttavia, facendo un'eliminazione, tutti gli altri successivi indici shifteranno di 1.
+     * persona aveva nella lista. tuttavia, facendo un'eliminazione, tutti gli altri successivi indici shifteranno di 1.
      * bisogna dunque gestire un controllo che aggiorni gli indici decrementandoli di 1 se sono superiori a quello della
      * persona che deve essere rimossa dalla lista.
      */
