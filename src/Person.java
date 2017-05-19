@@ -14,7 +14,7 @@ public class Person<T extends Enum<T>> extends Individual<T> {
 	private int suggestion = 0;
     private Individual.Type suggestedType;
     public int sex;
-    public final int defaultTTL = 2;
+    public final int defaultTTL = 25;
 
     /**
      * Costruttore di una persona. Inizializza il suo tipo e il TTL (Time to Live) che vine usato per stabilire il
