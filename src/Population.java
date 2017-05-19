@@ -8,6 +8,7 @@ import java.util.*;
 public class Population implements Evolution {
 
     private final int suggestionvalue = 5;
+    private final int maxsuggestionvalue = 75;
     private List<Person<Individual.Type>> morList = new ArrayList<>();
     private List<Person<Individual.Type>> avvList = new ArrayList<>();
     private List<Person<Individual.Type>> pruList = new ArrayList<>();
@@ -80,15 +81,31 @@ public class Population implements Evolution {
         if (positive) {
             if (childtype.equals(Individual.Type.M)) {
                 if (p1.sex == 0) {
-                    return new Pair(p1.getType(),suggestionvalue);
+                    if (p2.getSuggestion()+suggestionvalue <= maxsuggestionvalue) {
+                        return new Pair(p1.getType(),p2.getSuggestion()+suggestionvalue);
+                    } else {
+                        return new Pair(p1.getType(),maxsuggestionvalue);
+                    }
                 } else {
-                    return new Pair(p2.getType(),suggestionvalue);
+                    if (p1.getSuggestion()+suggestionvalue <= maxsuggestionvalue) {
+                        return new Pair(p2.getType(),p1.getSuggestion()+suggestionvalue);
+                    } else {
+                        return new Pair(p2.getType(),maxsuggestionvalue);
+                    }
                 }
             } else if (childtype.equals(Individual.Type.S)) {
                 if (p1.sex == 1) {
-                    return new Pair(p1.getType(),suggestionvalue);
+                    if (p2.getSuggestion()+suggestionvalue <= maxsuggestionvalue) {
+                        return new Pair(p1.getType(),p2.getSuggestion()+suggestionvalue);
+                    } else {
+                        return new Pair(p1.getType(),75);
+                    }
                 } else {
-                    return new Pair(p2.getType(),suggestionvalue);
+                    if (p1.getSuggestion()+suggestionvalue <= maxsuggestionvalue) {
+                        return new Pair(p2.getType(),p1.getSuggestion()+suggestionvalue);
+                    } else {
+                        return new Pair(p2.getType(),maxsuggestionvalue);
+                    }
                 }
             }
         } else {
@@ -131,7 +148,7 @@ public class Population implements Evolution {
         List<PersonPair> spr_list = choosePeople(spr_n, sprList);
         if (remaining.size() != 0) { // se ci sono persone rimaste dal turno precedente.
             for (PersonPair pp : remaining) {
-                if (pp.person.getTTL() != 0) {
+                if (pp.person.getTTL() > 0) {
                     switch (pp.person.getType()) {
                         case M: {
                             mor_list.add(0, pp);
@@ -435,34 +452,47 @@ public class Population implements Evolution {
      * Chiamata prima di effettuare una evolve. Controlla che ci siano persone con TTL = 0 e le uccide.
      */
     private void checkPeopleToKill() {
+        int morkilled = 0;
+        int avvkilled = 0;
+        int sprkilled = 0;
+        int prukilled = 0;
         for (int i = 0; i < morList.size();) {
-            if (morList.get(i).getTTL() == 0) {
+            if (morList.get(i).getTTL() <= 0) {
                 killPerson(morList.get(i),i);
+                morkilled++;
             } else {
+                morList.get(i).decreaseTTL();
                 i++;
             }
         }
         for (int i = 0; i < avvList.size();) {
-            if (avvList.get(i).getTTL() == 0) {
+            if (avvList.get(i).getTTL() <= 0) {
                 killPerson(avvList.get(i),i);
+                avvkilled++;
             } else {
+                avvList.get(i).decreaseTTL();
                 i++;
             }
         }
         for (int i = 0; i < pruList.size();) {
-            if (pruList.get(i).getTTL() == 0) {
+            if (pruList.get(i).getTTL() <= 0) {
                 killPerson(pruList.get(i),i);
+                prukilled++;
             } else {
+                pruList.get(i).decreaseTTL();
                 i++;
             }
         }
         for (int i = 0; i < sprList.size();) {
-            if (sprList.get(i).getTTL() == 0) {
+            if (sprList.get(i).getTTL() <= 0) {
                 killPerson(sprList.get(i),i);
+                sprkilled++;
             } else {
+                sprList.get(i).decreaseTTL();
                 i++;
             }
         }
+        //System.out.println("Uccisi: " +morkilled+" M, "+avvkilled+" A, "+prukilled+" P, "+sprkilled+" S.");
     }
 
     private int getMaxSize(List<List<PersonPair>> l) {
@@ -488,7 +518,7 @@ public class Population implements Evolution {
         int n;
         for (int i = 0; i < quantity; i++) {
             n = r.nextInt(quantity);
-            while (set.contains(n) || list.get(n).isParent || list.get(n).getTTL() != list.get(n).defaultTTL) {
+            while (set.contains(n) || (list.get(n).isParent && !list.get(n).getType().equals(Individual.Type.A)) || isInRemaining(n, list.get(0).getType())) {
                 avoidLoop.add(n);
                 if (avoidLoop.size() == quantity) {
                     looped = true;
@@ -501,6 +531,13 @@ public class Population implements Evolution {
             else looped = false;
         }
         return l;
+    }
+
+    private boolean isInRemaining(int n, Individual.Type t) {
+        for (PersonPair p : remaining) {
+            if (p.person.getType().equals(t) && p.index == n) return true;
+        }
+        return false;
     }
 
     /**
@@ -528,12 +565,12 @@ public class Population implements Evolution {
             payoff[0] += tmp[0]; //payoff della donna
             payoff[1] += tmp[1]; //payoff dell'uomo
             int[] child = typeOfChildren(p1.getType(), p2.getType());
-            if (payoff[0] < 0) { //se muore la madre
-                killPerson(p1,i1);
+            if (payoff[0] <= 0) { //se muore la madre
+                killPerson(p1.sex == 0 ? p1 : p2, p1.sex == 0 ? i1 : i2);
                 killed = true;
             }
-            if (payoff[1] < 0) { //se muore il padre
-                killPerson(p2,i2);
+            if (payoff[1] <= 0) { //se muore il padre
+                killPerson(p2.sex == 1 ? p2 : p1, p2.sex == 1 ? i2 : i1);
                 killed = true;
             }
             if (child[1] == 0) children.add(new Person<>(Individual.Type.P));  //i numeri corrispondono ai tipi. vedi metodo typeOfChildren
@@ -689,7 +726,8 @@ public class Population implements Evolution {
             return 1;
         }
         int y = new Random().nextInt(101);
-        return (int)Math.floor(Math.exp(100.00/((double)y+47.00))-1.34);
+        //System.out.println("Generati "+(int)Math.floor(Math.exp(100.00/((double)y+47.00))-1.34)+" figli");
+        return (int)Math.floor(Math.exp(100.00/((double)y+47.00))-1.34)+2;
     }
 
     /**
@@ -749,7 +787,7 @@ public class Population implements Evolution {
 
     public int[] currentPopulation() {
         int[] n = new int[4];
-        n[0] = mor; n[1] = avv; n[2] = pru; n[3] = spr;
+        n[0] += mor; n[1] += avv; n[2] += pru; n[3] += spr;
         return n;
     }
 }
