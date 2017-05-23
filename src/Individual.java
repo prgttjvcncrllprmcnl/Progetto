@@ -10,7 +10,7 @@ public abstract class Individual<T extends Enum<T>> {
 	 * M = Morigerato
 	 * A = Avventuriero
 	 * P = Prudente
-	 * S = Spregiudicata
+	 * S = Spregiudicata...
 	 */
 	public enum Type{
 		M, A, P, S
