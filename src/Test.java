@@ -267,10 +267,10 @@ public static class PieChartDemo2 extends ApplicationFrame {            //PRIMO 
             plot.mapDatasetToRangeAxis(2, 0); // stesso schema,dataset differente
 
             final XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);  //renderer che connette i punti dati
-            renderer.setSeriesPaint(0, Color.BLUE);                                   //mostra linee=true
-            plot.setRenderer(1, renderer);                                            //mostra forme=false
-            renderer.setSeriesPaint(0, Color.GREEN);
-            plot.setRenderer(2, renderer);
+            renderer.setSeriesPaint(0, Color.GREEN);                                   //mostra linee=true
+            plot.setRenderer(2, renderer);                                          //mostra forme=false
+            
+          
         }
         private void fourthSeries(final XYPlot plot) {
             final XYDataset fourthDataset = this.createDataset(series3);
@@ -279,10 +279,10 @@ public static class PieChartDemo2 extends ApplicationFrame {            //PRIMO 
             plot.mapDatasetToRangeAxis(3, 0); // stesso schema,dataset differente
 
             final XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);  //renderer che connette i punti dati
-            renderer.setSeriesPaint(0, Color.BLUE);                                   //mostra linee=true
-            plot.setRenderer(1, renderer);                                            //mostra forme=false
-            renderer.setSeriesPaint(0, Color.YELLOW);
-            plot.setRenderer(3, renderer);
+            renderer.setSeriesPaint(0, Color.YELLOW);                                  //mostra linee=true
+            plot.setRenderer(3, renderer);                                           //mostra forme=false
+            
+            
         }
 
         /**
