@@ -8,6 +8,17 @@ public class Test {
         Population p = new Population(10000,10000,10000,10000);
         p.setValues(15,20,3);
         printPop(p,p.currentPopulation());
+        
+        Graphics.PieChartDemo2 pie = new Graphics.PieChartDemo2("Popolazione");        //creo grafico a torta
+        pie.pack();                                                  //per settare la finestra alla grandezza desiderata e farci entrare tutte le componenti
+        RefineryUtilities.positionFrameOnScreen(pie,0.1,0.4);        //messo a sinistra sullo schermo
+        pie.setVisible(true);                                        //la rendo visibile
+
+        final Graphics.DynamicLineAndTimeSeriesChart demo = new Graphics.DynamicLineAndTimeSeriesChart("Dynamic Line And TimeSeries Chart");
+        demo.pack();
+        RefineryUtilities.positionFrameOnScreen(demo,0.9,0.4);       //leggi sopra
+        demo.setVisible(true);
+        
         /*
         for (int i = 0; i < 200; i++) {
             p.evolve();
@@ -18,6 +29,11 @@ public class Test {
         while (true) {
             p.evolve();
             printPop(p,p.currentPopulation());
+            
+            Graphics.PieChartDemo2 demo2 = new Graphics.PieChartDemo2("Popolazione");    //crea ogni volta un nuovo grafico a torta
+            pie.setContentPane(demo2.getContentPane());                //ne mette il contenuto nel pannello aggiornando il grafo
+            pie.setVisible(true);
+            
             if (p.currentPopulation()[0] == 0 || p.currentPopulation()[1] == 0 || p.currentPopulation()[2] == 0 || p.currentPopulation()[3] == 0) break;
         }
 
