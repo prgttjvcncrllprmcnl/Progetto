@@ -6,8 +6,12 @@
           <option name="url" value="https://github.com/prgttjvcncrllprmcnl/Progetto" />
           <option name="userName" value="" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="https://Nikpick@github.com/prgttjvcncrllprmcnl/Progetto" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
-    <option name="cloneParentDir" value="C:\Users\Luca Iezzi\Desktop\PROGETTO_GIT" />
+    <option name="cloneParentDir" value="C:\Users\glynk\IdeaProjects\Progetto\src" />
   </component>
 </application>
