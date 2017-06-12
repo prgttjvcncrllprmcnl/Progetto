@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="284.0" prefWidth="544.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="InputController">
+   <children>
+      <Text layoutX="24.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Immettere il numero delle popolazioni:" wrappingWidth="249.31005859375">
+         <font>
+            <Font name="Century Gothic" size="13.0" />
+         </font>
+      </Text>
+      <TextField fx:id="tf_morigerati" layoutX="87.0" layoutY="59.0" prefHeight="25.0" prefWidth="73.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="tf_avventurieri" layoutX="98.0" layoutY="146.0" prefHeight="23.0" prefWidth="83.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="tf_prudenti" layoutX="77.0" layoutY="103.0" prefHeight="23.0" prefWidth="65.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="tf_spregiudicate" layoutX="112.0" layoutY="188.0" prefHeight="23.0" prefWidth="96.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <Text layoutX="341.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Immetere i valori:" wrappingWidth="108.50146484375">
+         <font>
+            <Font name="Century Gothic" size="13.0" />
+         </font>
+      </Text>
+      <TextField fx:id="tf_costocorteggiamento" layoutX="478.0" layoutY="146.0" prefHeight="23.0" prefWidth="54.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="tf_costocrescita" layoutX="428.0" layoutY="103.0" prefHeight="23.0" prefWidth="54.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="tf_premiogenerazionefigli" layoutX="482.0" layoutY="60.0" prefHeight="23.0" prefWidth="54.0">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </TextField>
+      <Button layoutX="482.0" layoutY="249.0" mnemonicParsing="false" onAction="#onAvviaClick" text="Avvia">
+         <font>
+            <Font name="Century Gothic" size="13.0" />
+         </font>
+      </Button>
+      <Text layoutX="24.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Morigerati:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+      <Text layoutX="24.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Prudenti:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+      <Text layoutX="24.0" layoutY="162.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Avventurieri:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+      <Text layoutX="24.0" layoutY="204.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Spregiudicate:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+      <Text layoutX="341.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Premio generazione figli:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+      <Text layoutX="341.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Costo crescita:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+      <Text layoutX="341.0" layoutY="162.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Costo corteggiamento:">
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font>
+      </Text>
+   </children>
+</Pane>
