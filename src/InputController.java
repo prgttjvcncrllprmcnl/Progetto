@@ -19,7 +19,7 @@ public class InputController {
     private int def_b1 = new Integer(40);
     private int def_c1 = new Integer(6);
     boolean bool = true;
-    static Population p = new Population(10000,10000,10000,10000);
+    static Population p;
 
     @FXML
     private TextField tf_morigerati;
@@ -61,7 +61,7 @@ public class InputController {
         int bb1 = Integer.parseInt(b1);
         int cc1 = Integer.parseInt(c1);
         //Metto a condizione che se non si rispettano i valori di immissione il programma partirà con valori di default
-        if (aa <= 0 || bb <= 0 || cc <= 0 || dd <= 0) {
+        if (aa < 0 || bb < 0 || cc < 0 || dd < 0) {
             aa = def_a;
             bb = def_b;
             cc = def_c;
@@ -70,7 +70,7 @@ public class InputController {
             bb1 = def_b1;
             cc1 = def_c1;
         }
-        p = new Population(aa,bb,cc,dd);
+        p = new Population(aa,bb,dd,cc);
         p.setValues(aa1,bb1,cc1);
 
 
@@ -92,11 +92,12 @@ public class InputController {
             Graphics.PieChartDemo2 demo2=new Graphics.PieChartDemo2("Popolazione");
             pie.setContentPane(demo2.getContentPane());
             pie.setVisible(true);
-
+            /*
             if (p.currentPopulation()[0] == 0 || p.currentPopulation()[1] == 0 || p.currentPopulation()[2] == 0 || p.currentPopulation()[3] == 0) {
                 break;
             }
-            n = (n+1)%500;
+            */
+            n = (n+1)%200;
         }
     }
 
