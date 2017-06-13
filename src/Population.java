@@ -175,11 +175,11 @@ public class Population implements Evolution {
         int n = r.nextInt(4); // per vedere chi inizia a scegliere
         int sum = mor_n+avv_n+pru_n+spr_n;
         for (int i = 0; i < sum; i++) {
-            if (l.get(n)!= 0) {
+            if (l.get(n) > 0) {
                 int coin = r.nextInt(2);
-                int coin2 = r.nextInt(2);
                 switch (n) {
                     case 0: { //morigerato
+                        int coin2 = r.nextInt(2);
                         boolean change_strategy = changeStrategy(Individual.Type.M);
                         if (!change_strategy) {
                             if (coin == 0) { //sceglie la prudente
@@ -219,6 +219,7 @@ public class Population implements Evolution {
                         break;
                     }
                     case 1: { //avventuriero
+                        int coin2 = r.nextInt(2);
                         boolean change_strategy = changeStrategy(Individual.Type.A);
                         if (!change_strategy) {
                             if (coin == 0) { //sceglie la spregiudicata
@@ -258,6 +259,7 @@ public class Population implements Evolution {
                         break;
                     }
                     case 2: { //prudente
+                        int coin2 = r.nextInt(2);
                         boolean change_strategy = changeStrategy(Individual.Type.P);
                         if (!change_strategy) {
                             if (coin == 0) { //sceglie il morigerato
@@ -297,6 +299,7 @@ public class Population implements Evolution {
                         break;
                     }
                     case 3: { //spregiudicata
+                        int coin2 = r.nextInt(2);
                         boolean change_strategy = changeStrategy(Individual.Type.S);
                         if (!change_strategy) {
                             if (coin == 0) { //sceglie il morigerato
@@ -337,6 +340,10 @@ public class Population implements Evolution {
                     }
                 }
             }
+            l.set(0,mor_n);
+            l.set(1,avv_n);
+            l.set(2,pru_n);
+            l.set(3,spr_n);
             n = (n+1)%4;
         }
     }
@@ -377,7 +384,7 @@ public class Population implements Evolution {
         if (ret) {
             Random r = new Random();
             int coin = r.nextInt(101);
-            if (coin <= 65) return true;
+            if (coin <= 100) return true;
         }
         return false;
     }
