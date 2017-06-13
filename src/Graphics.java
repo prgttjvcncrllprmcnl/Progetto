@@ -53,10 +53,10 @@ public class Graphics {public static class PieChartDemo2 extends ApplicationFram
      */
     public PieDataset createSampleDataset() {
         DefaultPieDataset result = new DefaultPieDataset();
-        result.setValue("Morigerati", Test.p.currentPopulation()[0]);
-        result.setValue("Avventurieri", Test.p.currentPopulation()[1]);
-        result.setValue("Prudenti", Test.p.currentPopulation()[2]);
-        result.setValue("Spregiudicate", Test.p.currentPopulation()[3]);
+        result.setValue("Morigerati "+InputController.p.getPercentage(Individual.Type.M)+"%",InputController.p.currentPopulation()[0]);
+        result.setValue("Avventurieri "+InputController.p.getPercentage(Individual.Type.A)+"%", InputController.p.currentPopulation()[1]);
+        result.setValue("Prudenti "+InputController.p.getPercentage(Individual.Type.P)+"%", InputController.p.currentPopulation()[2]);
+        result.setValue("Spregiudicate "+InputController.p.getPercentage(Individual.Type.S)+"%", InputController.p.currentPopulation()[3]);
         return result;
     }
 
@@ -183,7 +183,7 @@ public class Graphics {public static class PieChartDemo2 extends ApplicationFram
 
             //Mostra dati nel range x,y
             final ValueAxis yaxis = plot.getRangeAxis();
-            yaxis.setRange(0.0, 100000.0);
+            yaxis.setRange(0.0, 100.0);
 
             final XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
             renderer.setSeriesPaint(0, Color.RED);
@@ -233,10 +233,10 @@ public class Graphics {public static class PieChartDemo2 extends ApplicationFram
          * @param e  the action event.
          */
         public void actionPerformed(final ActionEvent e) {
-            series.add(new Millisecond(), Test.p.currentPopulation()[0]);
-            series1.add(new Millisecond(), Test.p.currentPopulation()[1]);
-            series2.add(new Millisecond(), Test.p.currentPopulation()[2]);
-            series3.add(new Millisecond(), Test.p.currentPopulation()[3]);
+            series.add(new Millisecond(), InputController.faiIlPrint(InputController.p.currentPopulation())[0]*100); //so
+            series1.add(new Millisecond(), InputController.faiIlPrint(InputController.p.currentPopulation())[1]*100);
+            series2.add(new Millisecond(), InputController.faiIlPrint(InputController.p.currentPopulation())[2]*100);
+            series3.add(new Millisecond(), InputController.faiIlPrint(InputController.p.currentPopulation())[3]*100);
 
         }
         private XYDataset createDataset(final TimeSeries series) {
