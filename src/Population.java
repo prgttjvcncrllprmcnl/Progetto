@@ -52,6 +52,7 @@ public class Population implements Evolution {
         this.avv = avv;
         this.pru = pru;
         this.spr = spr;
+        /*
         for (int i = 0; i < mor; i++) {
             morList.add(new Person<>(Individual.Type.M));
         }
@@ -64,6 +65,7 @@ public class Population implements Evolution {
         for (int i = 0; i < spr; i++) {
             sprList.add(new Person<>(Individual.Type.S));
         }
+        */
     }
 
     /**
@@ -134,311 +136,202 @@ public class Population implements Evolution {
         return null;
 	}
 
+	public void killpercent() {
+	    if (mor >= 50000 || avv >= 50000 || pru >= 50000 || spr >= 50000) {
+	        mor = mor/2;
+	        avv = avv/2;
+	        spr = spr/2;
+	        pru = pru/2;
+        }
+    }
+    /*
+    private int get20Percent(int i) {
+        double d = ((double)i*30.00/100.00);
+        if (d < 1) return i;
+        return (int)d;
+    }
+    */
+
 	private List<PersonPair> remaining = new ArrayList<>();
     @Override
     public void evolve() {
-	    checkPeopleToKill();
+        killpercent();
         int mor_n = get30Percent(mor);
         int avv_n = get30Percent(avv);
         int pru_n = get30Percent(pru);
         int spr_n = get30Percent(spr);
+        /*
         List<PersonPair> mor_list = choosePeople(mor_n, morList);
         List<PersonPair> avv_list = choosePeople(avv_n, avvList);
         List<PersonPair> pru_list = choosePeople(pru_n, pruList);
         List<PersonPair> spr_list = choosePeople(spr_n, sprList);
-        if (remaining.size() != 0) { // se ci sono persone rimaste dal turno precedente.
-            for (PersonPair pp : remaining) {
-                if (pp.person.getTTL() > 0) {
-                    switch (pp.person.getType()) {
-                        case M: {
-                            mor_list.add(0, pp);
-                            break;
-                        }
-                        case A: {
-                            avv_list.add(0, pp);
-                            break;
-                        }
-                        case S: {
-                            spr_list.add(0, pp);
-                            break;
-                        }
-                        case P: {
-                            pru_list.add(0, pp);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        remaining.clear();
         List<List<PersonPair>> l = new ArrayList<>();
         l.add(mor_list); l.add(avv_list); l.add(pru_list); l.add(spr_list);
         int max = getMaxSize(l);
+        */
+        List<Integer> l = new ArrayList<>();
+        l.add(mor_n); l.add(avv_n); l.add(pru_n); l.add(spr_n);
         Random r = new Random();
         int n = r.nextInt(4); // per vedere chi inizia a scegliere
-
-        for (int i = 0; i < 4*max; i++) {
-            if (l.get(n).size() != 0) {
-                PersonPair p1 = l.get(n).get(0); //prendo la prima PersonPair nella lista del tipo preso a caso
-                int coin = r.nextInt(100); //lancio moneta. se è < 50 scelgo un tipo, altrimenti sceglo un altro. uso un lancio 0-99 per gestire il caso in cui ho suggestion.
-                switch (p1.person.getType()) {
-                    case M: {
-                        int prob_pru = 49;
-                        int prob_spr = 50;
-                        if (Objects.equals(p1.person.getSuggestedType(),(Individual.Type.P))) {
-                            prob_pru += p1.person.getSuggestion();
-                            prob_spr -= p1.person.getSuggestion();
-                        } else {
-                            prob_pru -= p1.person.getSuggestion();
-                            prob_spr += p1.person.getSuggestion();
-                        }
-                        if (coin <= prob_pru && l.get(2).size() != 0) { //se c'è almeno una prudente
-                            PersonPair p2 = l.get(2).get(0); //prendo la prudente
-                            int coin2 = r.nextInt(2);
-                            if (coin2 == 0) { //la prudente decide se starci o meno
-                                createFamily(p1.person, p2.person, p1.index, p2.index);
-                                p1.person.decreaseTTL();
-                                p2.person.decreaseTTL();
-                                mor_list.remove(0);
-                                pru_list.remove(0);
-                            } else {
-                                p1.person.decreaseTTL();
-                                remaining.add(p1);
-                                mor_list.remove(0);
-                            }
-                        } else if (coin <= prob_pru && l.get(2).size() == 0) {
-                            p1.person.decreaseTTL();
-                            remaining.add(p1);
-                            mor_list.remove(0);
-                        } else if (coin >= prob_spr && l.get(3).size() != 0) { //se c'è almeno una spregiudicata
-                            PersonPair p2 = l.get(3).get(0); //prendo la spregiudicata
-                            if (p2.person.getSuggestion() == 0) {
-                                int coin2 = r.nextInt(2);
-                                if (coin2 == 0) { //la spregiudicata decide se starci o meno
-                                    createFamily(p1.person, p2.person, p1.index, p2.index);
-                                    p1.person.decreaseTTL();
-                                    p2.person.decreaseTTL();
-                                    mor_list.remove(0);
-                                    spr_list.remove(0);
+        int sum = mor_n+avv_n+pru_n+spr_n;
+        for (int i = 0; i < sum; i++) {
+            if (l.get(n)!= 0) {
+                int coin = r.nextInt(2);
+                int coin2 = r.nextInt(2);
+                switch (n) {
+                    case 0: { //morigerato
+                        boolean change_strategy = changeStrategy(Individual.Type.M);
+                        if (!change_strategy) {
+                            if (coin == 0) { //sceglie la prudente
+                                if (pru_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.M, Individual.Type.P);
+                                    mor_n--;
+                                    pru_n--;
                                 } else {
-                                    p1.person.decreaseTTL();
-                                    remaining.add(p1);
-                                    mor_list.remove(0);
+                                    mor_n--;
                                 }
-                            } else {
-                                int coin2 = r.nextInt(100);
-                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.M))) { //se il consiglio è per M
-                                    if (coin2 <= 49+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        mor_list.remove(0);
-                                        spr_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        mor_list.remove(0);
-                                    }
+                            } else if (coin == 1) { //sceglie la spregiudicata
+                                if (spr_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.M, Individual.Type.S);
+                                    mor_n--;
+                                    spr_n--;
                                 } else {
-                                    if (coin2 >= 50+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        mor_list.remove(0);
-                                        spr_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        mor_list.remove(0);
-                                    }
+                                    mor_n--;
                                 }
                             }
-                        } else if (coin >= prob_spr && l.get(3).size() == 0) {
-                            p1.person.decreaseTTL();
-                            remaining.add(p1);
-                            mor_list.remove(0);
+                        } else { //cambia strategia (diventa avventuriero)
+                            mor--;
+                            avv++;
+                            mor_n--;
+                            avv_n++;
+                            if (coin == 0) { //gli capita la prudente
+                                avv_n--;
+                            } else if (coin == 1) { //gli capita la spregiudicata
+                                if (spr_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.A, Individual.Type.S);
+                                    avv_n--;
+                                    spr_n--;
+                                } else {
+                                    avv_n--;
+                                }
+                            }
                         }
                         break;
                     }
-                    case S: {
-                        int prob_mor = 49;
-                        int prob_avv = 50;
-                        if (Objects.equals(p1.person.getSuggestedType(), (Individual.Type.M))) {
-                            prob_mor += p1.person.getSuggestion();
-                            prob_avv -= p1.person.getSuggestion();
-                        } else {
-                            prob_mor -= p1.person.getSuggestion();
-                            prob_avv += p1.person.getSuggestion();
-                        }
-                        if (coin <= prob_mor && l.get(0).size() != 0) { //se c'è almeno un morigerato
-                            PersonPair p2 = l.get(0).get(0); //prendo il morigerato
-                            if (p2.person.getSuggestion() == 0) {
-                                int coin2 = r.nextInt(2);
-                                if (coin2 == 0) { //il morigerato decide se starci o meno
-                                    createFamily(p1.person, p2.person, p1.index, p2.index);
-                                    p1.person.decreaseTTL();
-                                    p2.person.decreaseTTL();
-                                    spr_list.remove(0);
-                                    mor_list.remove(0);
+                    case 1: { //avventuriero
+                        boolean change_strategy = changeStrategy(Individual.Type.A);
+                        if (!change_strategy) {
+                            if (coin == 0) { //sceglie la spregiudicata
+                                if (spr_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.A, Individual.Type.S);
+                                    avv_n--;
+                                    spr_n--;
                                 } else {
-                                    p1.person.decreaseTTL();
-                                    remaining.add(p1);
-                                    spr_list.remove(0);
+                                    avv_n--;
                                 }
-                            } else {
-                                int coin2 = r.nextInt(100);
-                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.S))) { //se il consiglio è per S
-                                    if (coin2 <= 49+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        spr_list.remove(0);
-                                        mor_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        spr_list.remove(0);
-                                    }
+                            } else if (coin == 1) { //sceglie la prudente
+                                avv_n--;
+                            }
+                        } else { //cambia strategia (diventa morigerato)
+                            avv--;
+                            mor++;
+                            avv_n--;
+                            mor_n++;
+                            if (coin == 0) { //gli capita la prudente
+                                if (pru_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.M, Individual.Type.P);
+                                    mor_n--;
+                                    pru_n--;
                                 } else {
-                                    if (coin2 >= 50+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        spr_list.remove(0);
-                                        mor_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        spr_list.remove(0);
-                                    }
+                                    mor_n--;
+                                }
+                            } else if (coin == 1) { //gli capita la spregiudicata
+                                if (spr_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.M, Individual.Type.S);
+                                    mor_n--;
+                                    spr_n--;
+                                } else {
+                                    mor_n--;
                                 }
                             }
-                        } else if (coin <= prob_mor && l.get(0).size() == 0) {
-                            p1.person.decreaseTTL();
-                            remaining.add(p1);
-                        } else if (coin >= prob_avv && l.get(1).size() != 0) { //se c'è almeno un avventuriero
-                            PersonPair p2 = l.get(1).get(0); //prendo l'avventuriero
-                            if (p2.person.getSuggestion() == 0) {
-                                int coin2 = r.nextInt(2);
-                                if (coin2 == 0) { //l'avventuriero decide se starci o meno
-                                    createFamily(p1.person, p2.person, p1.index, p2.index);
-                                    p1.person.decreaseTTL();
-                                    p2.person.decreaseTTL();
-                                    spr_list.remove(0);
-                                    avv_list.remove(0);
-                                } else {
-                                    p1.person.decreaseTTL();
-                                    remaining.add(p1);
-                                    spr_list.remove(0);
-                                }
-                            }
-                        } else if (coin >= prob_avv && l.get(1).size() == 0) {
-                            p1.person.decreaseTTL();
-                            remaining.add(p1);
-                            spr_list.remove(0);
                         }
                         break;
                     }
-                    case P: {
-                        if (coin <= 49 && l.get(0).size() != 0) { //se c'è almeno un morigerato
-                            PersonPair p2 = l.get(0).get(0); //prendo il morigerato
-                            if (p2.person.getSuggestion() == 0) {
-                                int coin2 = r.nextInt(2);
-                                if (coin2 == 0) { //il morigerato decide se starci o meno
-                                    createFamily(p1.person, p2.person, p1.index, p2.index);
-                                    p1.person.decreaseTTL();
-                                    p2.person.decreaseTTL();
-                                    pru_list.remove(0);
-                                    mor_list.remove(0);
+                    case 2: { //prudente
+                        boolean change_strategy = changeStrategy(Individual.Type.P);
+                        if (!change_strategy) {
+                            if (coin == 0) { //sceglie il morigerato
+                                if (mor_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.P, Individual.Type.M);
+                                    pru_n--;
+                                    mor_n--;
                                 } else {
-                                    p1.person.decreaseTTL();
-                                    remaining.add(p1);
-                                    pru_list.remove(0);
+                                    pru_n--;
                                 }
-                            } else {
-                                int coin2 = r.nextInt(100);
-                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.P))) { //se il consiglio è per P
-                                    if (coin2 <= 49+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        pru_list.remove(0);
-                                        mor_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        pru_list.remove(0);
-                                    }
+                            } else if (coin == 1) { //sceglie l'avventuriero
+                                pru_n--;
+                            }
+                        } else { //cambia strategia (diventa spregiudicata)
+                            pru--;
+                            spr++;
+                            pru_n--;
+                            spr_n++;
+                            if (coin == 0) { //gli capita il morigerato
+                                if (mor_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.S, Individual.Type.M);
+                                    spr_n--;
+                                    mor_n--;
                                 } else {
-                                    if (coin2 >= 50+p2.person.getSuggestion()) { //il morigerato decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        pru_list.remove(0);
-                                        mor_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        pru_list.remove(0);
-                                    }
+                                    spr_n--;
+                                }
+                            } else if (coin == 1) { //gli capita l'avventuriero
+                                if (avv_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.S, Individual.Type.A);
+                                    spr_n--;
+                                    avv_n--;
+                                } else {
+                                    spr_n--;
                                 }
                             }
-                        } else {
-                            p1.person.decreaseTTL();
-                            remaining.add(p1);
-                            pru_list.remove(0);
                         }
                         break;
                     }
-                    case A: {
-                        if (coin <= 49 && l.get(3).size() != 0) { //se c'è almeno una spregiudicata
-                            PersonPair p2 = l.get(3).get(0); //prendo la spregiudicata
-                            if (p2.person.getSuggestion() == 0) {
-                                int coin2 = r.nextInt(2);
-                                if (coin2 == 0) { //la spregiudicata decide se starci o meno
-                                    createFamily(p1.person, p2.person, p1.index, p2.index);
-                                    p1.person.decreaseTTL();
-                                    p2.person.decreaseTTL();
-                                    avv_list.remove(0);
-                                    spr_list.remove(0);
+                    case 3: { //spregiudicata
+                        boolean change_strategy = changeStrategy(Individual.Type.S);
+                        if (!change_strategy) {
+                            if (coin == 0) { //sceglie il morigerato
+                                if (mor_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.S, Individual.Type.M);
+                                    spr_n--;
+                                    mor_n--;
                                 } else {
-                                    p1.person.decreaseTTL();
-                                    remaining.add(p1);
-                                    avv_list.remove(0);
+                                    spr_n--;
                                 }
-                            } else {
-                                int coin2 = r.nextInt(100);
-                                if (Objects.equals(p2.person.getSuggestedType(), (Individual.Type.A))) { //se il consiglio è per A
-                                    if (coin2 <= 49+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        avv_list.remove(0);
-                                        spr_list.remove(0);
-
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        avv_list.remove(0);
-                                    }
+                            } else if (coin == 1) { //sceglie l'avventuriero
+                                if (avv_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.S, Individual.Type.A);
+                                    spr_n--;
+                                    avv_n--;
                                 } else {
-                                    if (coin2 >= 50+p2.person.getSuggestion()) { //la spregiudicata decide se starci o meno
-                                        createFamily(p1.person, p2.person, p1.index, p2.index);
-                                        p1.person.decreaseTTL();
-                                        p2.person.decreaseTTL();
-                                        avv_list.remove(0);
-                                        spr_list.remove(0);
-                                    } else {
-                                        p1.person.decreaseTTL();
-                                        remaining.add(p1);
-                                        avv_list.remove(0);
-                                    }
+                                    spr_n--;
                                 }
                             }
-                        } else {
-                            p1.person.decreaseTTL();
-                            remaining.add(p1);
-                            avv_list.remove(0);
+                        } else { //cambia strategia (diventa prudente)
+                            spr--;
+                            pru++;
+                            spr_n--;
+                            pru_n++;
+                            if (coin == 0) { //gli capita il morigerato
+                                if (mor_n != 0 && coin2 == 0) {
+                                    createFamily(Individual.Type.P, Individual.Type.M);
+                                    pru_n--;
+                                    mor_n--;
+                                } else {
+                                    pru_n--;
+                                }
+                            } else if (coin == 1) { //gli capita l'avventuriero
+                                pru_n--;
+                            }
                         }
                         break;
                     }
@@ -446,6 +339,47 @@ public class Population implements Evolution {
             }
             n = (n+1)%4;
         }
+    }
+
+    private boolean changeStrategy(Individual.Type t) {
+        double perc_M = (double)mor/((double)mor+(double)avv);
+        double perc_A = (double)avv/((double)mor+(double)avv);
+        double perc_S = (double)spr/((double)spr+(double)pru);
+        double perc_P = (double)pru/((double)spr+(double)pru);
+        boolean ret = false;
+        switch (t) {
+            case M: {
+                double guadagno_M = perc_P*(a-b/2-c)+perc_S*(a-b/2);
+                double guadagno_A = perc_S*(a);
+                if (guadagno_M < guadagno_A) ret = true;
+                break;
+            }
+            case A: {
+                double guadagno_M = perc_P*(a-b/2-c)+perc_S*(a-b/2);
+                double guadagno_A = perc_S*(a);
+                if (guadagno_A < guadagno_M) ret = true;
+                break;
+            }
+            case P: {
+                double guadagno_P = perc_M*(a-b/2-c);
+                double guadagno_S = perc_M*(a-b/2)+perc_A*(a-b);
+                if (guadagno_P < guadagno_S) ret = true;
+                break;
+            }
+            case S: {
+                double guadagno_P = perc_M*(a-b/2-c);
+                double guadagno_S = perc_M*(a-b/2)+perc_A*(a-b);
+                if (guadagno_S < guadagno_P) ret = true;
+                break;
+            }
+        }
+
+        if (ret) {
+            Random r = new Random();
+            int coin = r.nextInt(101);
+            if (coin <= 58) return true;
+        }
+        return false;
     }
 
     /**
@@ -513,22 +447,13 @@ public class Population implements Evolution {
         List<PersonPair> l = new ArrayList<>();
 	    Random r = new Random();
         Set<Integer> set = new HashSet<>();
-        Set<Integer> avoidLoop = new HashSet<>();
-        boolean looped = false;
         int n;
         for (int i = 0; i < quantity; i++) {
             n = r.nextInt(quantity);
-            while (set.contains(n) || (list.get(n).isParent && !list.get(n).getType().equals(Individual.Type.A)) || isInRemaining(n, list.get(0).getType())) {
-                avoidLoop.add(n);
-                if (avoidLoop.size() == quantity) {
-                    looped = true;
-                    break;
-                }
+            while (set.contains(n)) {
                 n = r.nextInt(quantity);
             }
             set.add(n);
-            if (!looped) l.add(new PersonPair(list.get(n),n));
-            else looped = false;
         }
         return l;
     }
@@ -550,6 +475,46 @@ public class Population implements Evolution {
         if (d < 1) return i;
         return (int)d;
     }
+
+    public void createFamily(Individual.Type t1, Individual.Type t2) {
+        switch (t1) {
+            case A: {
+                avv++;
+                break;
+            }
+            case M: {
+                mor++;
+                break;
+            }
+            case P: {
+                pru++;
+                break;
+            }
+            case S: {
+                spr++;
+                break;
+            }
+        }
+        switch (t2) {
+            case A: {
+                avv++;
+                break;
+            }
+            case M: {
+                mor++;
+                break;
+            }
+            case P: {
+                pru++;
+                break;
+            }
+            case S: {
+                spr++;
+                break;
+            }
+        }
+    }
+
 
     @Override
 	public boolean createFamily(Person<Individual.Type> p1, Person<Individual.Type> p2, int i1, int i2) {
