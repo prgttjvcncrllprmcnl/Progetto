@@ -1,7 +1,7 @@
 import java.util.*;
 
 /**
- * 
+ *
  * @author Luca Iezzi, Daniel Hrituc
  *
  */
@@ -16,27 +16,27 @@ public class Population implements Evolution {
     private int mor, avv, pru, spr, a, b, c;
     private boolean abcSetted = false;
 
-	/**
-	 * Classe per gestire una coppia tipo-intero utile in vari contesti.
-	 */
-	class Pair {
-		private Individual.Type type;
-		private int suggestion;
-		public Pair(Individual.Type t, int s){
-			this.suggestion = s;
+    /**
+     * Classe per gestire una coppia tipo-intero utile in vari contesti.
+     */
+    class Pair {
+        private Individual.Type type;
+        private int suggestion;
+        public Pair(Individual.Type t, int s){
+            this.suggestion = s;
             this.type = t;
-		}
-	}
+        }
+    }
 
     /**
      * Classe per gestire una coppia persona-intero.
      */
-	class PersonPair {
-	    private Person<Individual.Type> person;
-	    private int index;
-	    public PersonPair(Person<Individual.Type> p, int i) {
-	        this.person = p;
-	        this.index = i;
+    class PersonPair {
+        private Person<Individual.Type> person;
+        private int index;
+        public PersonPair(Person<Individual.Type> p, int i) {
+            this.person = p;
+            this.index = i;
         }
     }
 
@@ -47,7 +47,7 @@ public class Population implements Evolution {
      * @param spr numero di spregiudicate
      * @param pru numero di prudenti
      */
-	public Population(int mor, int avv, int spr, int pru) {
+    public Population(int mor, int avv, int spr, int pru) {
         this.mor = mor;
         this.avv = avv;
         this.pru = pru;
@@ -79,7 +79,7 @@ public class Population implements Evolution {
      * valore che verrà sommato alla probabilità che il figlio ha di scegliere quel tipo. Altrimenti ritorna null
      * perchè i tipi A e P sono vincolati a una sola scelta di partner.
      */
-	private Pair suggestion(Person<Individual.Type> p1, Person<Individual.Type> p2, Individual.Type childtype, boolean positive) {
+    private Pair suggestion(Person<Individual.Type> p1, Person<Individual.Type> p2, Individual.Type childtype, boolean positive) {
         if (positive) {
             if (childtype.equals(Individual.Type.M)) {
                 if (p1.sex == 0) {
@@ -134,14 +134,14 @@ public class Population implements Evolution {
             }
         }
         return null;
-	}
+    }
 
-	public void killpercent() {
-	    if (mor >= 50000 || avv >= 50000 || pru >= 50000 || spr >= 50000) {
-	        mor = mor/2;
-	        avv = avv/2;
-	        spr = spr/2;
-	        pru = pru/2;
+    public void killpercent() {
+        if (mor >= 50000 || avv >= 50000 || pru >= 50000 || spr >= 50000) {
+            mor = mor/2;
+            avv = avv/2;
+            spr = spr/2;
+            pru = pru/2;
         }
     }
     /*
@@ -152,7 +152,7 @@ public class Population implements Evolution {
     }
     */
 
-	private List<PersonPair> remaining = new ArrayList<>();
+    private List<PersonPair> remaining = new ArrayList<>();
     @Override
     public void evolve() {
         killpercent();
@@ -377,7 +377,7 @@ public class Population implements Evolution {
         if (ret) {
             Random r = new Random();
             int coin = r.nextInt(101);
-            if (coin <= 58) return true;
+            if (coin <= 65) return true;
         }
         return false;
     }
@@ -430,7 +430,7 @@ public class Population implements Evolution {
     }
 
     private int getMaxSize(List<List<PersonPair>> l) {
-	    int n = 0;
+        int n = 0;
         for (List<PersonPair> l_pp : l) {
             if (n < l_pp.size()) n = l_pp.size();
         }
@@ -445,7 +445,7 @@ public class Population implements Evolution {
      */
     private List<PersonPair> choosePeople(int quantity, List<Person<Individual.Type>> list) {
         List<PersonPair> l = new ArrayList<>();
-	    Random r = new Random();
+        Random r = new Random();
         Set<Integer> set = new HashSet<>();
         int n;
         for (int i = 0; i < quantity; i++) {
@@ -517,8 +517,8 @@ public class Population implements Evolution {
 
 
     @Override
-	public boolean createFamily(Person<Individual.Type> p1, Person<Individual.Type> p2, int i1, int i2) {
-		int n = childrenNumber(p1.getType(),p2.getType());
+    public boolean createFamily(Person<Individual.Type> p1, Person<Individual.Type> p2, int i1, int i2) {
+        int n = childrenNumber(p1.getType(),p2.getType());
         if (n == 0) return false;
         p1.isParent = true;
         p2.isParent = true;
@@ -598,9 +598,9 @@ public class Population implements Evolution {
         return true;
     }
 
-	@Override
-	public boolean killPerson(Person<Individual.Type> p, int i) {
-		switch(p.getType()){
+    @Override
+    public boolean killPerson(Person<Individual.Type> p, int i) {
+        switch(p.getType()){
             case P:
                 pruList.remove(i);
                 pru--;
@@ -622,41 +622,41 @@ public class Population implements Evolution {
             if (pers.person.getType().equals(p.getType()) && pers.index > i) {
                 pers.index--;
             }
-		}
-		return true;
-	}
+        }
+        return true;
+    }
 
-	@Override
-	public void setValues(int a, int b, int c) {
+    @Override
+    public void setValues(int a, int b, int c) {
         this.a = a;
         this.b = b;
         this.c = c;
         abcSetted = true;
-	}
+    }
 
-	@Override
-	public boolean valuesIsSet() {
+    @Override
+    public boolean valuesIsSet() {
         return abcSetted;
-	}
+    }
 
-	@Override
-	public boolean isNextTo(int[] first, int[] other) {
+    @Override
+    public boolean isNextTo(int[] first, int[] other) {
         for (int i = 0; i < 4; i++) {
             if (Math.abs(first[i]-other[i]) > 5) return false;
         }
         return true;
     }
 
-	@Override
-	public boolean checkForStability(List<int[]> l) {
+    @Override
+    public boolean checkForStability(List<int[]> l) {
         for (int i = 1; i < l.size(); i++) {
             if (!isNextTo(l.get(0),l.get(i))) return false;
         }
         return true;
     }
 
-	@Override
-	public double getPercentage(Individual.Type t) throws IllegalArgumentException {
+    @Override
+    public double getPercentage(Individual.Type t) throws IllegalArgumentException {
         int tot = mor+avv+spr+pru;
         switch (t) {
             case A: return Math.floor(((double)avv/(double)tot)*100 * 100) / 100;
@@ -665,7 +665,7 @@ public class Population implements Evolution {
             case S: return Math.floor(((double)spr/(double)tot)*100 * 100) / 100;
             default: return 0;
         }
-	}
+    }
 
     /**
      * La funzione calcola il numero di figli di una coppia. Il calcolo dovrebbe seguire delle probabilità razionali,
@@ -756,5 +756,3 @@ public class Population implements Evolution {
         return n;
     }
 }
-
-//Nick puzza
