@@ -107,9 +107,9 @@ public class Graphics {public static class PieChartDemo2 extends ApplicationFram
         public DynamicLineAndTimeSeriesChart(final String title) {
 
             super(title);
-            series = new TimeSeries("M");
-            series1 = new TimeSeries("A");
-            series2 = new TimeSeries("P");
+            series = new TimeSeries("P");
+            series1 = new TimeSeries("M");
+            series2 = new TimeSeries("A");
             series3 = new TimeSeries("S");
 
             //Creo grafico con linee
