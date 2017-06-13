@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import org.jfree.ui.RefineryUtilities;
 
 import static java.lang.System.out;
 
@@ -18,6 +19,7 @@ public class InputController {
     private int def_b1 = new Integer(40);
     private int def_c1 = new Integer(6);
     boolean bool = true;
+    static Population p = new Population(10000,10000,10000,10000);
 
     @FXML
     private TextField tf_morigerati;
@@ -68,14 +70,33 @@ public class InputController {
             bb1 = def_b1;
             cc1 = def_c1;
         }
-        Population p = new Population(aa,bb,cc,dd);
+        p = new Population(aa,bb,cc,dd);
         p.setValues(aa1,bb1,cc1);
+
+
+        Graphics.PieChartDemo2 pie = new Graphics.PieChartDemo2("Popultion");
+        pie.pack();
+        RefineryUtilities.positionFrameOnScreen(pie,0.1,0.4);
+        pie.setVisible(true);
+
+        final Graphics.DynamicLineAndTimeSeriesChart demo=new Graphics.DynamicLineAndTimeSeriesChart("Popultion");
+        demo.pack();
+        RefineryUtilities.positionFrameOnScreen(demo,0.9,0.4);
+        demo.setVisible(true);
+        int n = 0;
         while(bool) {
-            p.evolve();
+            if (n == 0)
+                p.evolve();
             printPop(p, p.currentPopulation());
+
+            Graphics.PieChartDemo2 demo2=new Graphics.PieChartDemo2("Popolazione");
+            pie.setContentPane(demo2.getContentPane());
+            pie.setVisible(true);
+
             if (p.currentPopulation()[0] == 0 || p.currentPopulation()[1] == 0 || p.currentPopulation()[2] == 0 || p.currentPopulation()[3] == 0) {
                 break;
             }
+            n = (n+1)%500;
         }
     }
 
@@ -90,6 +111,16 @@ public class InputController {
         String perMorUomini = "; %M: ";
         out.print(s+ "  ---  ");
         out.print("Percentuali: "+per);
-        out.println(perPrudDonne+((double)n[2])/((double)n[2]+(double)n[3])+perMorUomini+((double)n[0])/((double)n[0]+(double)n[1]));
+        double[] d = faiIlPrint(n);
+        out.println(perPrudDonne+d[0]+perMorUomini+d[1]);
+    }
+
+    public static double[] faiIlPrint(int[] n) {
+        double[] d = new double[4];
+        d[0] = ((double)n[2])/((double)n[2]+(double)n[3]); //prudenti
+        d[1] = ((double)n[0])/((double)n[0]+(double)n[1]); //morigerati
+        d[2] = ((double)n[1])/((double)n[1]+(double)n[0]); //avventurieri
+        d[3] = ((double)n[3])/((double)n[3]+(double)n[2]); //spregiudicate
+        return d;
     }
 }
