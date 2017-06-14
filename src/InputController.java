@@ -1,16 +1,15 @@
 /**
  * Created by Nikita on 11/06/2017.
  */
-
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import org.jfree.ui.RefineryUtilities;
 
 import static java.lang.System.out;
 
-public class InputController {
+public class InputController extends Test{
     private int def_a = new Integer(10000);
     private int def_b = new Integer(10000);
     private int def_c = new Integer(10000);
@@ -73,6 +72,8 @@ public class InputController {
         p = new Population(aa,bb,dd,cc);
         p.setValues(aa1,bb1,cc1);
 
+        //chiudo la finestra di input
+        finestra.close();
 
         Graphics.PieChartDemo2 pie = new Graphics.PieChartDemo2("Popultion");
         pie.pack();
